@@ -1,0 +1,242 @@
+instance.events.allEvents({ fromBlock: "latest" }, function (err, data) {
+    if (err) {
+    console.log(err);
+    }
+
+    let user, referrer, receiver;
+    if (data.returnValues.user) {
+    yield call getIdFromAddress(data.returnValues.user).then((res) => {
+        user = res;
+    });
+    }
+
+    if (data.returnValues.referrer) {
+    referrer = getIdFromAddress(data.returnValues.referrer).then((res) => {
+        referrer = res;
+    });
+    }
+
+    if (data.returnValues.receiver) {
+    receiver = getIdFromAddress(data.returnValues.receiver).then((res) => {
+        receiver = res;
+    });
+    }
+
+    if (data.event === "NewUserPlace") {
+    // Normal Process
+    // Get ID from address by using the users api with this parameter: data.returnValues.referrer
+    // Matrix: data.returnValues.matrix
+    // Level: data.returnValues.level
+    // Price: 0.025 * Math.pow(2, data.returnValues.level-1)
+    if (data.returnValues.matrix === "1" && data.returnValues.place < 3) {
+        // show  the message:
+        // ID: XXXX earned XX(:price) ETH in the X3
+        if (referrer)
+        handleAlertMessage(
+            `ID: ${referrer} earned ${
+            0.025 * Math.pow(2, data.returnValues.level - 1)
+            } ETH in the X3`
+        );
+    } else if (
+        data.returnValues.matrix === "2" &&
+        data.returnValues.place > 2 &&
+        data.returnValues < 6
+    ) {
+        // show  the message:
+        // ID: XXXX earned XX(:price) ETH in the X6
+        if (referrer)
+        handleAlertMessage(
+            `ID: ${referrer} earned ${
+            0.025 * Math.pow(2, data.returnValues.level - 1)
+            } ETH in the X6`
+        );
+    }
+    } else if (data.event === "Upgrade") {
+    // User ID: data.returnValues.user
+    // Referrer ID: data.returnValues.referrer
+    // show the message:
+    // ID: XXX buy data.returnValues.level in data.returnValues.matrix from ReferrerID: XXX
+    if (user && referrer)
+        handleAlertMessage(
+        `ID: ${user} buy ${data.returnValues.level} in ${data.returnValues.matrix} from ReferrerID: ${referrer}`
+        );
+    } else if (data.event === "Registration") {
+    // Get ID from address by using the users api with this parameter: data.returnValues.user
+    // show  the message:
+    // New user ID:XXX Welcome to Dondi
+    if (user) handleAlertMessage(`New user ID: ${user} Welcome to Dondi`);
+    } else if (data.event === "Reinvest") {
+    if (user) handleAlertMessage(`ID: ${user} reinvests`);
+    } else if (data.event === "MissedEthReceive") {
+    // Receiver ID: data.returnValues.receiver
+    // Price: 0.025 * Math.pow(2, data.returnValues.level-1)
+    // Show the message:
+    // Receiver ID: XXX missed profit [Price] ETH. You must perform the upgrade in data.returnValues.matrix
+    if (receiver)
+        handleAlertMessage(
+        `Receiver ID: ${receiver} missed profit ${
+            0.025 * Math.pow(2, data.returnValues.level - 1)
+        } ETH. You must perform the upgrade in ${data.returnValues.matrix}`
+        );
+    } else if (data.event === "SentExtraEthDividends") {
+    // Receiver ID: data.returnValues.receiver
+    // Price: 0.025 * Math.pow(2, data.returnValues.level-1)
+    // Show the mssage:
+    // ID: XXX received a bonus Price ETH
+    if (receiver)
+        handleAlertMessage(
+        `ID: ${receiver} received a bonus ${
+            0.025 * Math.pow(2, data.returnValues.level - 1)
+        } ETH`
+        );
+    }
+});
+
+
+
+
+
+
+
+
+
+
+const returnMessage = async (notificationObject) => {
+// let user = "",
+//   referrer = "",
+//   receiver = "";
+// if (notificationObject.returnValues.user) {
+//   getIdFromAddress(notificationObject.returnValues.user).then((res) => {
+//     user = res;
+//   });
+// }
+
+// if (notificationObject.returnValues.referrer) {
+//   referrer = getIdFromAddress(
+//     notificationObject.returnValues.referrer
+//   ).then((res) => {
+//     referrer = res;
+//   });
+// }
+
+// if (notificationObject.returnValues.receiver) {
+//   receiver = getIdFromAddress(
+//     notificationObject.returnValues.receiver
+//   ).then((res) => {
+//     receiver = res;
+//   });
+// }
+
+let matrix = "x3";
+if (notificationObject.returnValues.matrix === "1") {
+    matrix = "x6";
+}
+
+switch (notificationObject.event) {
+    case "Upgrade":
+    getIdFromAddress(notificationObject.returnValues.user).then((res) => {
+        if (notificationMessages.length < 10) {
+        notificationMessages.push(
+            `ID: ${res} buy slot ${notificationObject.returnValues.level} in ${matrix}`
+        );
+        setNotificationMessages(notificationMessages);
+        }
+        // return `ID: ${res} buy slot ${notificationObject.returnValues.level} in ${matrix}`; // from ReferrerID: ${referrer}`;
+    });
+    break;
+    case "Registration":
+    getIdFromAddress(notificationObject.returnValues.user).then((res) => {
+        if (notificationMessages.length < 10) {
+        notificationMessages.push(`New user ID: ${res} Welcome to Dondi`);
+        setNotificationMessages(notificationMessages);
+        }
+        // return `New user ID: ${res} Welcome to Dondi`;
+    });
+    break;
+    case "MissedEthReceive":
+    getIdFromAddress(notificationObject.returnValues.receiver).then(
+        (res) => {
+        if (notificationMessages.length < 10) {
+            notificationMessages.push(
+            `Receiver ID: ${res} missed profit ${
+                0.025 * Math.pow(2, notificationObject.returnValues.level - 1)
+            } ETH. You must perform the upgrade in ${matrix}`
+            );
+            setNotificationMessages(notificationMessages);
+        }
+        // return `Receiver ID: ${res} missed profit ${
+        //   0.025 * Math.pow(2, notificationObject.returnValues.level - 1)
+        // } ETH. You must perform the upgrade in ${matrix}`;
+        }
+    );
+    break;
+    case "SentExtraEthDividends":
+    getIdFromAddress(notificationObject.returnValues.receiver).then(
+        (res) => {
+        if (notificationMessages.length < 10) {
+            notificationMessages.push(
+            `ID: ${res} received a bonus ${
+                0.025 * Math.pow(2, notificationObject.returnValues.level - 1)
+            } ETH`
+            );
+            setNotificationMessages(notificationMessages);
+        }
+        // return `ID: ${res} received a bonus ${
+        //   0.025 * Math.pow(2, notificationObject.returnValues.level - 1)
+        // } ETH`;
+        }
+    );
+    break;
+    case "NewUserPlace":
+    getIdFromAddress(notificationObject.returnValues.referrer).then(
+        (res) => {
+        if (notificationMessages.length < 10) {
+            notificationMessages.push(
+            `ID: ${res} earned ${
+                0.025 * Math.pow(2, notificationObject.returnValues.level - 1)
+            } ETH in the ${matrix}`
+            );
+            setNotificationMessages(notificationMessages);
+        }
+        // return `ID: ${res} earned ${
+        //   0.025 * Math.pow(2, notificationObject.returnValues.level - 1)
+        // } ETH in the ${matrix}`;
+        }
+    );
+    break;
+    case "Reinvest":
+    getIdFromAddress(notificationObject.returnValues.user).then((res) => {
+        if (notificationMessages.length < 10) {
+        notificationMessages.push(`ID: ${res} reinvests`);
+        setNotificationMessages(notificationMessages);
+        }
+        // return `ID: ${res} reinvests`;
+    });
+    break;
+    default:
+    return "";
+}
+};
+
+
+
+
+
+
+
+
+
+
+
+useEffect(() => {
+    dispatch(pageActions.getCurrencyRateRequest());
+    const getRates = async () => {
+      let response = await fetch(
+        "https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=USD,EUR,GBP"
+      );
+      const data = await response.json();
+      setCurrencyRates(data);
+    };
+
+    getRates();
+  }, []);

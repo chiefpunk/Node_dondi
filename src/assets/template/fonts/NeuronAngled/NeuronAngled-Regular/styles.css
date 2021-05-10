@@ -1,0 +1,8 @@
+
+@font-face {
+  font-family: 'Neuron';
+  src: url('Neuron.eot?#iefix') format('embedded-opentype'),  url('Neuron.otf')  format('opentype'),
+	     url('Neuron.woff') format('woff'), url('Neuron.ttf')  format('truetype'), url('Neuron.svg#Neuron') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}

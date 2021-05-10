@@ -1,0 +1,82 @@
+$fontFamily: "Overpass", sans-serif;
+$grid-template-row-height: 10rem;
+
+// mock-ui import below
+$base: #202840;
+$base-dark: darken($base, 2%);
+
+$white: #fff;
+$greylighter: #ecf0f3;
+$greylight: #d1d9e6;
+$white-soft: rgba($white, 0.8);
+$black: #000;
+
+$theme: #563eef;
+$theme-light: #7878ef;
+
+$error: #fc3f7a;
+
+// Mixins
+@mixin bigPhoneAndUp() {
+  @media screen and (min-width: 30em) {
+    @content;
+  }
+}
+@mixin tabletAndUp {
+  @media screen and (min-width: 48em) {
+    @content;
+  }
+}
+@mixin wideDesktopAndUp() {
+  @media screen and (min-width: 70em) {
+    @content;
+  }
+}
+@mixin monitorAndUp() {
+  @media screen and (min-width: 95rem) {
+    @content;
+  }
+}
+
+@mixin insetSmall {
+  box-shadow: 1px 1px 0.25rem $white, -1px -1px 0.25rem $greylight,
+    inset -0.25rem -0.25rem 0.5rem $white,
+    inset 0.25rem 0.25rem 0.5rem $greylight;
+
+  @include darkMode {
+    box-shadow: 1px 1px 0.25rem rgba(#3a4873, 0.2),
+      -1px -1px 0.25rem rgba(#000, 0.3),
+      inset -0.25rem -0.25rem 0.5rem rgba(#3a4873, 0.2),
+      inset 0.25rem 0.25rem 0.5rem rgba(#000, 0.3);
+  }
+}
+@mixin shadowSmall {
+  box-shadow: -0.25rem -0.25rem 1rem $white, 0.25rem 0.25rem 1rem $greylight;
+
+  @include darkMode {
+    box-shadow: -0.25rem -0.25rem 1rem rgba(#3a4873, 0.3),
+      0.25rem 0.25rem 1rem rgba(#000, 0.3);
+  }
+}
+@mixin shadow {
+  box-shadow: -0.5rem -0.5rem 1rem $white, 0.5rem 0.5rem 1rem $greylight;
+
+  @include darkMode {
+    box-shadow: -0.5rem -0.5rem 1rem rgba(#3a4873, 0.3),
+      0.5rem 0.5rem 1rem rgba(#000, 0.3);
+  }
+}
+
+// Dark mode query mixin
+@mixin darkMode {
+  @media (prefers-color-scheme: dark) {
+    @content;
+
+    html.prefersDarkMode:not(.prefersLightMode) & {
+      @content;
+    }
+  }
+  html.prefersDarkMode & {
+    @content;
+  }
+}

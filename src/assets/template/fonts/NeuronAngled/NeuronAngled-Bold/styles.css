@@ -1,0 +1,8 @@
+
+@font-face {
+  font-family: 'NeuronAngled-Bold';
+  src: url('NeuronAngled-Bold.eot?#iefix') format('embedded-opentype'),  url('NeuronAngled-Bold.otf')  format('opentype'),
+	     url('NeuronAngled-Bold.woff') format('woff'), url('NeuronAngled-Bold.ttf')  format('truetype'), url('NeuronAngled-Bold.svg#NeuronAngled-Bold') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
